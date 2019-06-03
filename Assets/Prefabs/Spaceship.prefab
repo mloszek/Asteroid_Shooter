@@ -4955,8 +4955,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3016759524685653765}
   - component: {fileID: 237846081282399261}
-  - component: {fileID: 6317557676858020993}
   - component: {fileID: 8369453071598032474}
+  - component: {fileID: 6317557676858020993}
   m_Layer: 0
   m_Name: Spaceship
   m_TagString: Untagged
@@ -4996,33 +4996,12 @@ MonoBehaviour:
   rotationAngle: 5
   shootingInterval: 0.5
   projectileLifespan: 3
-  rigidbody: {fileID: 6317557676858020993}
-  collider: {fileID: 8369453071598032474}
+  m_rigidbody: {fileID: 6317557676858020993}
+  m_collider: {fileID: 8369453071598032474}
   launcher: {fileID: 6015994413455460907}
   exhaustFire: {fileID: 3016759523723183993}
   laserProjectile: {fileID: 3716870386030469577, guid: 848124ff3016e3940ba91c1646a845d7,
     type: 3}
---- !u!50 &6317557676858020993
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3016759524685653818}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
 --- !u!60 &8369453071598032474
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -5053,3 +5032,24 @@ PolygonCollider2D:
       - {x: -0.5, y: -0.45}
       - {x: 0.5, y: -0.45}
       - {x: 0.59, y: -0.25}
+--- !u!50 &6317557676858020993
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3016759524685653818}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
