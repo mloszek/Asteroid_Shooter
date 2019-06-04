@@ -95,9 +95,6 @@ public class AsteroidField : MonoBehaviour
     {
         while (true)
         {
-            //MarkOffscreenCollisions();
-            //HandleOffscreenCollisions();
-
             foreach (SpaceObject spaceObject in spaceObjects)
             {
                 if (!spaceObject.isVisible)
@@ -119,40 +116,6 @@ public class AsteroidField : MonoBehaviour
             yield return new WaitForSeconds(.01f);
         }
     }
-
-    #region unused methods
-    private void MarkOffscreenCollisions()
-    {
-        for (int i = 0; i < spaceObjects.Count - 1; i++)
-        {
-            for (int j = i + 1; j < spaceObjects.Count; j++)
-            {
-                if (!spaceObjects[i].isVisible && !spaceObjects[j].isVisible)
-                {
-                    CheckOffscreenCollision(spaceObjects[i], spaceObjects[j]);
-                }
-            }
-        }
-    }
-
-    private void CheckOffscreenCollision(SpaceObject obj1, SpaceObject obj2)
-    {
-        if (Mathf.Sqrt(Mathf.Pow((obj1.position.x - obj2.position.x), 2) + Mathf.Pow((obj1.position.y - obj2.position.y), 2)) < StaticsHolder.MIN_OBJECT_DISTANCE)
-        {
-            objToRelocate.Add(obj1);
-            objToRelocate.Add(obj2);
-        }
-    }
-
-    private void HandleOffscreenCollisions()
-    {
-        foreach (SpaceObject obj in objToRelocate)
-        {
-            StartCoroutine(DoRespawn(obj));
-        }
-        objToRelocate.Clear();
-    }
-    #endregion
 
     private IEnumerator DoRespawn(SpaceObject deadSpaceObject, float delay = 0)
     {
