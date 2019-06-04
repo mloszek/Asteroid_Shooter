@@ -1257,7 +1257,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a973310c5abd5f74db70da0c1c1ae288, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridSize: {x: 256, y: 256}
+  gridSize: {x: 512, y: 512}
   gridOffset: 5
   ship: {fileID: 3016759524685653818, guid: 05cc33fa8c5ed06489bb79c96597b9cd, type: 3}
   asteroidField: {fileID: 1922671750}

@@ -8,6 +8,6 @@ public class MenuController : BaseUiController
 {
     private void Start()
     {
-        scoreText.text = string.Format("HIGH SCORE\n{0}", PlayerPrefs.HasKey(KeysHolder.PREFS_SCORE_KEY) ? PlayerPrefs.GetInt(KeysHolder.PREFS_SCORE_KEY).ToString() : KeysHolder.DEFAULT_SCORE);
+        scoreText.text = string.Format("HIGH SCORE\n{0}", PlayerPrefs.HasKey(StaticsHolder.PREFS_SCORE_KEY) ? PlayerPrefs.GetInt(StaticsHolder.PREFS_SCORE_KEY).ToString() : StaticsHolder.DEFAULT_SCORE);
     }    
 }

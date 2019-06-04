@@ -17,7 +17,7 @@ public class Asteroid : MonoBehaviour
         asteroidField = field;
         spaceObject = spaceObj;
         gameObject.SetActive(true);
-        AsteroidField.onUpdate += UpdateAsteroid;
+        AsteroidField.updateVisibleAsteroids += UpdateAsteroid;
     }
 
     public void UpdateAsteroid()
@@ -27,7 +27,7 @@ public class Asteroid : MonoBehaviour
         spaceObject.position.y += spaceObject.vector.y;
         if (!asteroidField.IsObjectVisible(spaceObject.position.x, spaceObject.position.y))
         {
-            AsteroidField.onUpdate -= UpdateAsteroid;
+            AsteroidField.updateVisibleAsteroids -= UpdateAsteroid;
             spaceObject.isVisible = false;
             gameObject.SetActive(false);
             asteroidField.asteroidStack.Push(gameObject);
@@ -36,13 +36,13 @@ public class Asteroid : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag(KeysHolder.PROJECTILE_TAG))
+        if (collision.gameObject.CompareTag(StaticsHolder.PROJECTILE_TAG))
         {
             IngameUiController.RaiseScore();
             collision.gameObject.SetActive(false);
         }
 
-        AsteroidField.onUpdate -= UpdateAsteroid;
+        AsteroidField.updateVisibleAsteroids -= UpdateAsteroid;
         gameObject.SetActive(false);
         asteroidField.asteroidStack.Push(gameObject);
 

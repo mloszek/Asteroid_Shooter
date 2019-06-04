@@ -11,7 +11,7 @@ public abstract class BaseUiController : MonoBehaviour
 
     public void Play()
     {
-        SceneManager.LoadScene(KeysHolder.GAME_SCENE);
+        SceneManager.LoadScene(StaticsHolder.GAME_SCENE);
     }
 
     public void Exit()

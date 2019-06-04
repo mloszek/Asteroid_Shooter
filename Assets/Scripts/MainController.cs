@@ -19,13 +19,13 @@ public class MainController : MonoBehaviour
     {
         int tempScore = IngameUiController.GetScore();
 
-        if (PlayerPrefs.HasKey(KeysHolder.PREFS_SCORE_KEY))
+        if (PlayerPrefs.HasKey(StaticsHolder.PREFS_SCORE_KEY))
         {
-            if (PlayerPrefs.GetInt(KeysHolder.PREFS_SCORE_KEY) > tempScore)
+            if (PlayerPrefs.GetInt(StaticsHolder.PREFS_SCORE_KEY) > tempScore)
                 return;
         }
 
-        PlayerPrefs.SetInt(KeysHolder.PREFS_SCORE_KEY, tempScore);
+        PlayerPrefs.SetInt(StaticsHolder.PREFS_SCORE_KEY, tempScore);
     }
 
     #region basic methods

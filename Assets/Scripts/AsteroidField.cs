@@ -10,11 +10,12 @@ public class AsteroidField : MonoBehaviour
     private Rect rect;
 
     public delegate void OnUpdate();
-    public static event OnUpdate onUpdate;
+    public static event OnUpdate updateVisibleAsteroids;
     public Stack<GameObject> asteroidStack;
 
     private List<Vector2> nodes;
     private List<SpaceObject> spaceObjects;
+    private HashSet<SpaceObject> objToRelocate;
     private GameObject tempAsteroid;
     private Vector2 tempPosition;
     private int tempIndex;
@@ -23,10 +24,11 @@ public class AsteroidField : MonoBehaviour
     {
         rect.width = 20;
         rect.height = 20;
-        onUpdate = null;
+        updateVisibleAsteroids = null;
         nodes = new List<Vector2>();
         asteroidStack = new Stack<GameObject>();
         spaceObjects = new List<SpaceObject>();
+        objToRelocate = new HashSet<SpaceObject>();
 
         for (int i = 0; i < gridSize.x; i++)
         {
@@ -38,7 +40,7 @@ public class AsteroidField : MonoBehaviour
 
         foreach (Vector2 position in nodes)
         {
-            spaceObjects.Add(new SpaceObject(new Point(position.x, position.y), GetProperVector()));
+            spaceObjects.Add(new SpaceObject(new Point(position.x, position.y), ValidatePointVector()));
         }
 
         FillAsteroidStack();
@@ -47,7 +49,7 @@ public class AsteroidField : MonoBehaviour
 
     public void Respawn(SpaceObject deadSpaceObject)
     {
-        StartCoroutine(DoRespawn(deadSpaceObject));
+        StartCoroutine(DoRespawn(deadSpaceObject, StaticsHolder.RESPAWN_DEFAULT_DELAY));
     }
 
     public void SetRectPosition(Vector3 shipPosition)
@@ -66,7 +68,7 @@ public class AsteroidField : MonoBehaviour
     public void KillSimulation()
     {
         StopAllCoroutines();
-    }    
+    }
 
     private void FillAsteroidStack()
     {
@@ -78,7 +80,7 @@ public class AsteroidField : MonoBehaviour
         }
     }
 
-    private Point GetProperVector()
+    private Point ValidatePointVector()
     {
         float tempX;
         float tempY;
@@ -86,15 +88,18 @@ public class AsteroidField : MonoBehaviour
         tempX = Random.Range(-.05f, .05f);
         tempY = Random.Range(-.05f, .05f);
 
-        return new Point((float)(tempX == 0 ? .02 : tempX), (float) (tempY == 0 ? .02 : tempY));
+        return new Point((float)(tempX == 0 ? .02 : tempX), (float)(tempY == 0 ? .02 : tempY));
     }
 
     private IEnumerator UpdatePositions()
     {
         while (true)
         {
+            //MarkOffscreenCollisions();
+            //HandleOffscreenCollisions();
+
             foreach (SpaceObject spaceObject in spaceObjects)
-            {   
+            {
                 if (!spaceObject.isVisible)
                 {
                     spaceObject.position.x += spaceObject.vector.x;
@@ -109,17 +114,51 @@ public class AsteroidField : MonoBehaviour
                     }
                 }
             }
-            onUpdate?.Invoke();
+            updateVisibleAsteroids?.Invoke();
 
             yield return new WaitForSeconds(.01f);
         }
     }
 
-    private IEnumerator DoRespawn(SpaceObject deadSpaceObject)
+    #region unused methods
+    private void MarkOffscreenCollisions()
     {
-        yield return new WaitForSeconds(1f);
+        for (int i = 0; i < spaceObjects.Count - 1; i++)
+        {
+            for (int j = i + 1; j < spaceObjects.Count; j++)
+            {
+                if (!spaceObjects[i].isVisible && !spaceObjects[j].isVisible)
+                {
+                    CheckOffscreenCollision(spaceObjects[i], spaceObjects[j]);
+                }
+            }
+        }
+    }
 
-        tempIndex = KeysHolder.FIND_NEW_POSITION_ATTEMPTS;
+    private void CheckOffscreenCollision(SpaceObject obj1, SpaceObject obj2)
+    {
+        if (Mathf.Sqrt(Mathf.Pow((obj1.position.x - obj2.position.x), 2) + Mathf.Pow((obj1.position.y - obj2.position.y), 2)) < StaticsHolder.MIN_OBJECT_DISTANCE)
+        {
+            objToRelocate.Add(obj1);
+            objToRelocate.Add(obj2);
+        }
+    }
+
+    private void HandleOffscreenCollisions()
+    {
+        foreach (SpaceObject obj in objToRelocate)
+        {
+            StartCoroutine(DoRespawn(obj));
+        }
+        objToRelocate.Clear();
+    }
+    #endregion
+
+    private IEnumerator DoRespawn(SpaceObject deadSpaceObject, float delay = 0)
+    {
+        yield return new WaitForSeconds(delay);
+
+        tempIndex = StaticsHolder.FIND_NEW_POSITION_ATTEMPTS;
         tempPosition = nodes[Random.Range(0, nodes.Count)];
 
         while (IsObjectVisible(tempPosition.x, tempPosition.y) && tempIndex > 0)
@@ -128,7 +167,7 @@ public class AsteroidField : MonoBehaviour
             tempIndex--;
         }
 
-        tempIndex = KeysHolder.FIND_NEW_POSITION_ATTEMPTS;
+        tempIndex = StaticsHolder.FIND_NEW_POSITION_ATTEMPTS;
         deadSpaceObject.position = new Point(tempPosition.x, tempPosition.y);
         deadSpaceObject.isVisible = false;
     }

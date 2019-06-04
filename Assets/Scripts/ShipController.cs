@@ -5,7 +5,7 @@ using UnityEngine;
 public class ShipController : MonoBehaviour
 {
     [SerializeField]
-    private float speed, rotationAngle, shootingInterval, projectileLifespan;
+    private float speed, rotationAngle, shootingInterval;
     [SerializeField]
     private Rigidbody2D m_rigidbody;
     [SerializeField]
@@ -107,7 +107,7 @@ public class ShipController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag(KeysHolder.PROJECTILE_TAG))
+        if (collision.gameObject.CompareTag(StaticsHolder.PROJECTILE_TAG))
             return;
 
         Destroy(gameObject);

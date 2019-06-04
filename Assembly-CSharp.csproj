@@ -65,13 +65,13 @@
     <Compile Include="Assets\Scripts\BackgroundScroller.cs" />
     <Compile Include="Assets\Scripts\BaseUiController.cs" />
     <Compile Include="Assets\Scripts\IngameUiController.cs" />
-    <Compile Include="Assets\Scripts\KeysHolder.cs" />
     <Compile Include="Assets\Scripts\MainController.cs" />
     <Compile Include="Assets\Scripts\MenuController.cs" />
     <Compile Include="Assets\Scripts\Point.cs" />
     <Compile Include="Assets\Scripts\ProjectileMover.cs" />
     <Compile Include="Assets\Scripts\ShipController.cs" />
     <Compile Include="Assets\Scripts\SpaceObject.cs" />
+    <Compile Include="Assets\Scripts\StaticsHolder.cs" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>C:/Users/PC COMPUTER/Desktop/Asteroid Shooter/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
