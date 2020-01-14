@@ -4,31 +4,18 @@ using UnityEngine;
 
 public class ShipController : MonoBehaviour
 {
-    [SerializeField]
-    private float speed, rotationAngle, shootingInterval;
-    [SerializeField]
-    private Rigidbody2D m_rigidbody;
-    [SerializeField]
-    private Collider2D m_collider;
-    [SerializeField]
-    private Transform launcher;
-    [SerializeField]
-    private GameObject exhaustFire, laserProjectile;
+    [SerializeField] float speed, rotationAngle, shootingInterval;
+    [SerializeField] Rigidbody2D m_rigidbody;
+    [SerializeField] Collider2D m_collider;
+    [SerializeField] Transform launcher;
+    [SerializeField] GameObject exhaustFire, laserProjectile;
 
-    private Stack<GameObject> laserPool;
-    private GameObject tempLaser;
+    Stack<GameObject> laserPool;
+    GameObject tempLaser;
 
-    private IngameUiController uiController;
-    private AsteroidField asteroidField;
-    private float tempTime;
-    private Transform cameraTransform;
-    private Vector3 tempPosition;
-
-    public void SubscribeControllers(IngameUiController controller, AsteroidField field)
-    {
-        uiController = controller;
-        asteroidField = field;
-    }
+    float tempTime;
+    Transform cameraTransform;
+    Vector3 tempPosition;
 
     public void RestackLaser(GameObject usedLaser)
     {
@@ -37,7 +24,7 @@ public class ShipController : MonoBehaviour
 
     private void Start()
     {
-        asteroidField.SetRectPosition(transform.position);
+        GameEvents.SetRectPosition(transform.position);
         m_rigidbody = GetComponent<Rigidbody2D>();
         m_collider = GetComponent<Collider2D>();
         tempTime = 0;
@@ -85,8 +72,7 @@ public class ShipController : MonoBehaviour
         if (Input.GetKey("d"))
             transform.Rotate(Vector3.back, rotationAngle);
 
-
-        asteroidField.SetRectPosition(transform.position);
+        GameEvents.SetRectPosition(transform.position);
     }
 
     private void ShootLaser()
@@ -115,8 +101,8 @@ public class ShipController : MonoBehaviour
 
     private void OnDestroy()
     {
-        asteroidField.KillSimulation();
-        uiController.SetGameOverScreenActive(true);
+        GameEvents.KillSimulation();
+        GameEvents.SetGameOverScreen(true);
         MainController.CheckHighScore();
     }
 }

@@ -6,10 +6,19 @@ using UnityEngine.UI;
 
 public class IngameUiController : BaseUiController
 {
-    [SerializeField]
-    private GameObject gameOverScreen;
+    [SerializeField] private GameObject gameOverScreen;
 
-    private static int score = 0;    
+    private static int score = 0;
+
+    private void OnEnable()
+    {
+        GameEvents.OnSetGameOverScreen += SetGameOverScreenActive;
+    }
+
+    private void OnDisable()
+    {
+        GameEvents.OnSetGameOverScreen -= SetGameOverScreenActive;
+    }
 
     public static int GetScore()
     {

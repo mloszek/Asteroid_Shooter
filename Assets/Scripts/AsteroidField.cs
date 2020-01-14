@@ -4,21 +4,31 @@ using UnityEngine;
 
 public class AsteroidField : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject asteroid;
-    [SerializeField]
-    private Rect rect;
+    [SerializeField] GameObject asteroid;
+    [SerializeField] Rect rect;
 
     public delegate void OnUpdate();
     public static event OnUpdate updateVisibleAsteroids;
     public Stack<GameObject> asteroidStack;
 
-    private List<Vector2> nodes;
-    private List<SpaceObject> spaceObjects;
-    private HashSet<SpaceObject> objToRelocate;
-    private GameObject tempAsteroid;
-    private Vector2 tempPosition;
-    private int tempIndex;
+    List<Vector2> nodes;
+    List<SpaceObject> spaceObjects;
+    HashSet<SpaceObject> objToRelocate;
+    GameObject tempAsteroid;
+    Vector2 tempPosition;
+    int tempIndex;
+
+    private void OnEnable()
+    {
+        GameEvents.OnCreateField += CreateField;
+        GameEvents.OnSetRectPosition += SetRectPosition;
+    }
+
+    private void OnDisable()
+    {
+        GameEvents.OnCreateField -= CreateField;
+        GameEvents.OnSetRectPosition -= SetRectPosition;
+    }
 
     public void CreateField(Vector2 gridSize, float gridOffset)
     {

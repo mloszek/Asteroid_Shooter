@@ -6,8 +6,7 @@ using UnityEngine.UI;
 
 public abstract class BaseUiController : MonoBehaviour
 {
-    [SerializeField]
-    protected Text scoreText;
+    [SerializeField] protected Text scoreText;
 
     public void Play()
     {

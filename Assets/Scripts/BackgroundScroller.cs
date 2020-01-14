@@ -4,11 +4,10 @@ using UnityEngine;
 
 public class BackgroundScroller : MonoBehaviour
 {
-    [SerializeField]
-    private Material material;
+    [SerializeField] Material material;
+    [SerializeField] float parallax = 2f;
 
-    private float parallax = 2f;
-    private Vector2 offset;
+    Vector2 offset;
 
     private void Start()
     {

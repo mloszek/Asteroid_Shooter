@@ -4,16 +4,9 @@ using UnityEngine;
 
 public class MainController : MonoBehaviour
 {
-    [SerializeField]
-    private Vector2 gridSize;
-    [SerializeField]
-    private float gridOffset;
-    [SerializeField]
-    private GameObject ship;
-    [SerializeField]
-    private AsteroidField asteroidField;
-    [SerializeField]
-    private IngameUiController uiController;
+    [SerializeField] Vector2 gridSize;
+    [SerializeField] float gridOffset;
+    [SerializeField] GameObject ship;
 
     public static void CheckHighScore()
     {
@@ -33,21 +26,20 @@ public class MainController : MonoBehaviour
     private void Start()
     {
         ValidateGrid(ref gridSize);
-        uiController.SetGameOverScreenActive(false);
+        GameEvents.SetGameOverScreen(false);
+        GameEvents.CreateField(gridSize, gridOffset);
         SetShip();
-        asteroidField.CreateField(gridSize, gridOffset);
     }
 
-    private void ValidateGrid(ref Vector2 gridSize)
+    private void ValidateGrid(ref Vector2 _gridSize)
     {
-        gridSize.x = gridSize.x < 10 ? 10 : gridSize.x;
-        gridSize.y = gridSize.y < 10 ? 10 : gridSize.y;
+        _gridSize.x = _gridSize.x < 10 ? 10 : _gridSize.x;
+        _gridSize.y = _gridSize.y < 10 ? 10 : _gridSize.y;
     }
 
     private void SetShip()
     {
         GameObject tempShip = Instantiate(ship, new Vector3((gridSize.x * gridOffset - (gridSize.x % 2 == 0 ? gridOffset : 0)) / 2, (gridSize.y * gridOffset - (gridSize.x % 2 == 0 ? gridOffset : 0)) / 2, 0), Quaternion.identity);
-        tempShip.GetComponent<ShipController>().SubscribeControllers(uiController, asteroidField);
     }
 
     #endregion

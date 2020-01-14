@@ -4,13 +4,11 @@ using UnityEngine;
 
 public class ProjectileMover : MonoBehaviour
 {
-    [SerializeField]
-    private float speed;
-    [SerializeField]
-    private Rigidbody2D m_rigidbody;
+    [SerializeField] float speed;
+    [SerializeField] Rigidbody2D m_rigidbody;
 
-    private ShipController m_controller;
-    private float lifeSpan;
+    ShipController m_controller;
+    float lifeSpan;
 
     public void SubscribeShip(ShipController controller)
     {
