@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AsteroidField : MonoBehaviour
 {
-    [SerializeField] GameObject asteroid;
+    [SerializeField] GameObject asteroid, explosion;
     [SerializeField] Rect rect;
 
     public delegate void OnUpdate();
@@ -13,24 +13,28 @@ public class AsteroidField : MonoBehaviour
 
     List<Vector2> nodes;
     List<SpaceObject> spaceObjects;
-    HashSet<SpaceObject> objToRelocate;
+    SpaceObject[,] vicinityGrid;
     GameObject tempAsteroid;
     Vector2 tempPosition;
-    int tempIndex;
+    int tempIndex, tempX, tempY, objX, objY;
 
     private void OnEnable()
     {
         GameEvents.OnCreateField += CreateField;
         GameEvents.OnSetRectPosition += SetRectPosition;
+        GameEvents.OnPassGameobject += PassGameObject;
+        GameEvents.OnKillSimulation += KillSimulation;
     }
 
     private void OnDisable()
     {
         GameEvents.OnCreateField -= CreateField;
         GameEvents.OnSetRectPosition -= SetRectPosition;
+        GameEvents.OnPassGameobject -= PassGameObject;
+        GameEvents.OnKillSimulation -= KillSimulation;
     }
 
-    public void CreateField(Vector2 gridSize, float gridOffset)
+    private void CreateField(Vector2 gridSize, float gridOffset)
     {
         rect.width = 20;
         rect.height = 20;
@@ -38,7 +42,7 @@ public class AsteroidField : MonoBehaviour
         nodes = new List<Vector2>();
         asteroidStack = new Stack<GameObject>();
         spaceObjects = new List<SpaceObject>();
-        objToRelocate = new HashSet<SpaceObject>();
+        vicinityGrid = new SpaceObject[Mathf.RoundToInt(gridSize.x * gridOffset), Mathf.RoundToInt(gridSize.y * gridOffset)];
 
         for (int i = 0; i < gridSize.x; i++)
         {
@@ -62,10 +66,25 @@ public class AsteroidField : MonoBehaviour
         StartCoroutine(DoRespawn(deadSpaceObject, StaticsHolder.RESPAWN_DEFAULT_DELAY));
     }
 
-    public void SetRectPosition(Vector3 shipPosition)
+    private void SetRectPosition(Vector3 shipPosition)
     {
         rect.x = shipPosition.x - 10;
         rect.y = shipPosition.y - 10;
+    }
+
+    private void PassGameObject(GameObject obj)
+    {
+        objX = Mathf.RoundToInt(obj.transform.position.x);
+        objY = Mathf.RoundToInt(obj.transform.position.y);
+        if (objX < 0 || objX > vicinityGrid.GetUpperBound(0) || objY < 0 || objY > vicinityGrid.GetUpperBound(0))
+            return;
+
+        if (vicinityGrid[objX, objY] != null)
+        {
+            Destroy(Instantiate(explosion, new Vector3(objX, objY, 0), transform.rotation), StaticsHolder.EXPLOSION_LIFESPAN);
+            obj.SetActive(false);
+            Respawn(vicinityGrid[objX, objY]);
+        }
     }
 
     public bool IsObjectVisible(float positionX, float positionY)
@@ -105,6 +124,8 @@ public class AsteroidField : MonoBehaviour
     {
         while (true)
         {
+            System.Array.Clear(vicinityGrid, 0, vicinityGrid.Length);
+
             foreach (SpaceObject spaceObject in spaceObjects)
             {
                 if (!spaceObject.isVisible)
@@ -121,6 +142,27 @@ public class AsteroidField : MonoBehaviour
                     }
                 }
             }
+
+            foreach (SpaceObject spaceObject in spaceObjects)
+            {
+                tempX = Mathf.RoundToInt(spaceObject.position.x);
+                tempY = Mathf.RoundToInt(spaceObject.position.y);
+
+                tempX = tempX < 0 ? 0 : tempX;
+                tempX = tempX > vicinityGrid.GetUpperBound(0) ? vicinityGrid.GetUpperBound(0) : tempX;
+                tempY = tempY < 0 ? 0 : tempY;
+                tempY = tempY > vicinityGrid.GetUpperBound(0) ? vicinityGrid.GetUpperBound(0) : tempY;
+
+                if (vicinityGrid[tempX, tempY] != null)
+                {
+                    Respawn(spaceObject);
+                    Respawn(vicinityGrid[tempX, tempY]);
+                }
+                else
+                {
+                    vicinityGrid[tempX, tempY] = spaceObject;
+                }
+            }
             updateVisibleAsteroids?.Invoke();
 
             yield return new WaitForSeconds(.01f);
@@ -129,7 +171,7 @@ public class AsteroidField : MonoBehaviour
 
     private IEnumerator DoRespawn(SpaceObject deadSpaceObject, float delay = 0)
     {
-        yield return new WaitForSeconds(delay);
+        deadSpaceObject.position = new Point(-Mathf.Infinity, Mathf.Infinity);
 
         tempIndex = StaticsHolder.FIND_NEW_POSITION_ATTEMPTS;
         tempPosition = nodes[Random.Range(0, nodes.Count)];
@@ -140,8 +182,11 @@ public class AsteroidField : MonoBehaviour
             tempIndex--;
         }
 
+        yield return new WaitForSeconds(delay);
+
         tempIndex = StaticsHolder.FIND_NEW_POSITION_ATTEMPTS;
         deadSpaceObject.position = new Point(tempPosition.x, tempPosition.y);
         deadSpaceObject.isVisible = false;
+        deadSpaceObject.isDisposable = false;
     }
 }

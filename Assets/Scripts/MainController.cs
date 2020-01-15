@@ -5,8 +5,9 @@ using UnityEngine;
 public class MainController : MonoBehaviour
 {
     [SerializeField] Vector2 gridSize;
-    [SerializeField] float gridOffset;
     [SerializeField] GameObject ship;
+
+    const float gridOffset = 5;
 
     public static void CheckHighScore()
     {

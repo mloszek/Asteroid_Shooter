@@ -32,20 +32,4 @@ public class Asteroid : MonoBehaviour
             asteroidField.asteroidStack.Push(gameObject);
         }
     }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag(StaticsHolder.PROJECTILE_TAG))
-        {
-            IngameUiController.RaiseScore();
-            collision.gameObject.SetActive(false);
-        }
-
-        AsteroidField.updateVisibleAsteroids -= UpdateAsteroid;
-        gameObject.SetActive(false);
-        asteroidField.asteroidStack.Push(gameObject);
-
-        Destroy(Instantiate(explosion, transform.position, transform.rotation), explosionLifespan);        
-        asteroidField.Respawn(spaceObject);
-    }
 }

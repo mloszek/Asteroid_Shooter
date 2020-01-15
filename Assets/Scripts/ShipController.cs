@@ -5,8 +5,6 @@ using UnityEngine;
 public class ShipController : MonoBehaviour
 {
     [SerializeField] float speed, rotationAngle, shootingInterval;
-    [SerializeField] Rigidbody2D m_rigidbody;
-    [SerializeField] Collider2D m_collider;
     [SerializeField] Transform launcher;
     [SerializeField] GameObject exhaustFire, laserProjectile;
 
@@ -22,11 +20,22 @@ public class ShipController : MonoBehaviour
         laserPool.Push(usedLaser);
     }
 
+    private void OnEnable()
+    {
+        GameEvents.OnRestackLaser += RestackLaser;
+    }
+
+    private void OnDisable()
+    {
+        GameEvents.KillSimulation();
+        GameEvents.SetGameOverScreen(true);
+        MainController.CheckHighScore();
+        GameEvents.OnRestackLaser -= RestackLaser;
+    }
+
     private void Start()
     {
         GameEvents.SetRectPosition(transform.position);
-        m_rigidbody = GetComponent<Rigidbody2D>();
-        m_collider = GetComponent<Collider2D>();
         tempTime = 0;
         cameraTransform = Camera.main.transform;
         FillLaserPool();
@@ -39,7 +48,6 @@ public class ShipController : MonoBehaviour
         {
             tempLaser = Instantiate(laserProjectile, launcher.position, transform.rotation, launcher);
             tempLaser.SetActive(false);
-            tempLaser.GetComponent<ProjectileMover>().SubscribeShip(this);
             laserPool.Push(tempLaser);
         }
     }
@@ -47,20 +55,18 @@ public class ShipController : MonoBehaviour
     private void Update()
     {
         if (tempTime < shootingInterval)
+        {
             tempTime += Time.deltaTime;
+        }
         else
         {
             ShootLaser();
             tempTime = 0;
         }
-        UpdateCameraPosition();
-    }
 
-    private void FixedUpdate()
-    {
         if (Input.GetKey("w"))
         {
-            m_rigidbody.AddForce(transform.rotation * Vector3.up * speed);
+            transform.Translate(0f, speed * Time.deltaTime, 0f);
             exhaustFire.SetActive(true);
         }
         else
@@ -73,6 +79,9 @@ public class ShipController : MonoBehaviour
             transform.Rotate(Vector3.back, rotationAngle);
 
         GameEvents.SetRectPosition(transform.position);
+
+        UpdateCameraPosition();
+        GameEvents.PassGameobject(gameObject);
     }
 
     private void ShootLaser()
@@ -89,20 +98,5 @@ public class ShipController : MonoBehaviour
         tempPosition = transform.position;
         tempPosition.z = -1;
         cameraTransform.position = tempPosition;
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag(StaticsHolder.PROJECTILE_TAG))
-            return;
-
-        Destroy(gameObject);
-    }
-
-    private void OnDestroy()
-    {
-        GameEvents.KillSimulation();
-        GameEvents.SetGameOverScreen(true);
-        MainController.CheckHighScore();
     }
 }

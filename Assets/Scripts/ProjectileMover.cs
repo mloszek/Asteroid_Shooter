@@ -5,25 +5,21 @@ using UnityEngine;
 public class ProjectileMover : MonoBehaviour
 {
     [SerializeField] float speed;
-    [SerializeField] Rigidbody2D m_rigidbody;
 
-    ShipController m_controller;
     float lifeSpan;
-
-    public void SubscribeShip(ShipController controller)
-    {
-        m_controller = controller;
-    }
 
     private void OnEnable()
     {
         lifeSpan = 3;
         transform.parent = null;
-        m_rigidbody.AddRelativeForce(Vector2.up * speed, ForceMode2D.Impulse);
+        GameEvents.PlayLaser();
     }
 
     private void Update()
     {
+        transform.Translate(0f, speed * Time.deltaTime, 0f);
+        GameEvents.PassGameobject(gameObject);
+
         if (lifeSpan > 0)
             lifeSpan -= Time.deltaTime;
         else
@@ -33,6 +29,6 @@ public class ProjectileMover : MonoBehaviour
     private void OnDisable()
     {
         lifeSpan = 0;
-        m_controller.RestackLaser(gameObject);
+        GameEvents.RestackLaser(gameObject);
     }
 }

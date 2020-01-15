@@ -31,4 +31,25 @@ public class GameEvents : MonoBehaviour
         if (OnKillSimulation != null)
             OnKillSimulation();
     }
+
+    public static System.Action<GameObject> OnPassGameobject;
+    public static void PassGameobject(GameObject obj)
+    {
+        if (OnPassGameobject != null)
+            OnPassGameobject(obj);
+    }
+
+    public static System.Action<GameObject> OnRestackLaser;
+    public static void RestackLaser(GameObject obj)
+    {
+        if (OnRestackLaser != null)
+            OnRestackLaser(obj);
+    }
+
+    public static System.Action OnPlayLaser;
+    public static void PlayLaser()
+    {
+        if (OnPlayLaser != null)
+            OnPlayLaser();
+    }
 }

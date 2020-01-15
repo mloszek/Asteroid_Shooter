@@ -10,5 +10,6 @@ public static class StaticsHolder
     public static string PROJECTILE_TAG = "Laser";
     public static int FIND_NEW_POSITION_ATTEMPTS = 32;
     public static int MIN_OBJECT_DISTANCE = 1;
-    public static float RESPAWN_DEFAULT_DELAY = 1;
+    public static float RESPAWN_DEFAULT_DELAY = 0f;
+    public static float EXPLOSION_LIFESPAN = 1f;
 }
