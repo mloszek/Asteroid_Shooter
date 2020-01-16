@@ -12,7 +12,7 @@ public class AsteroidField : MonoBehaviour
     public Stack<GameObject> asteroidStack;
 
     List<Vector2> nodes;
-    List<SpaceObject> spaceObjects;
+    List<SpaceObject> spaceObjects, objectToDispose;
     SpaceObject[,] vicinityGrid;
     GameObject tempAsteroid;
     Vector2 tempPosition;
@@ -42,6 +42,7 @@ public class AsteroidField : MonoBehaviour
         nodes = new List<Vector2>();
         asteroidStack = new Stack<GameObject>();
         spaceObjects = new List<SpaceObject>();
+        objectToDispose = new List<SpaceObject>();
         vicinityGrid = new SpaceObject[Mathf.RoundToInt(gridSize.x * gridOffset), Mathf.RoundToInt(gridSize.y * gridOffset)];
 
         for (int i = 0; i < gridSize.x; i++)
@@ -59,12 +60,7 @@ public class AsteroidField : MonoBehaviour
 
         FillAsteroidStack();
         StartCoroutine(UpdatePositions());
-    }
-
-    public void Respawn(SpaceObject deadSpaceObject)
-    {
-        StartCoroutine(DoRespawn(deadSpaceObject, StaticsHolder.RESPAWN_DEFAULT_DELAY));
-    }
+    }    
 
     private void SetRectPosition(Vector3 shipPosition)
     {
@@ -84,6 +80,8 @@ public class AsteroidField : MonoBehaviour
             Destroy(Instantiate(explosion, new Vector3(objX, objY, 0), transform.rotation), StaticsHolder.EXPLOSION_LIFESPAN);
             obj.SetActive(false);
             Respawn(vicinityGrid[objX, objY]);
+            if (obj.tag == StaticsHolder.PROJECTILE_TAG)
+                IngameUiController.RaiseScore();
         }
     }
 
@@ -126,6 +124,19 @@ public class AsteroidField : MonoBehaviour
         {
             System.Array.Clear(vicinityGrid, 0, vicinityGrid.Length);
 
+            for (int i = objectToDispose.Count - 1; i > -1; i--)
+            {
+                if (objectToDispose[i].timeToDispose > 0)
+                {
+                    objectToDispose[i].timeToDispose -= Time.deltaTime;
+                }
+                else
+                {
+                    Respawn(objectToDispose[i]);
+                    objectToDispose.RemoveAt(i);
+                }
+            }
+
             foreach (SpaceObject spaceObject in spaceObjects)
             {
                 if (!spaceObject.isVisible)
@@ -153,10 +164,17 @@ public class AsteroidField : MonoBehaviour
                 tempY = tempY < 0 ? 0 : tempY;
                 tempY = tempY > vicinityGrid.GetUpperBound(0) ? vicinityGrid.GetUpperBound(0) : tempY;
 
-                if (vicinityGrid[tempX, tempY] != null)
+                if (vicinityGrid[tempX, tempY] != null && !vicinityGrid[tempX, tempY].isDisposable)
                 {
-                    Respawn(spaceObject);
-                    Respawn(vicinityGrid[tempX, tempY]);
+                    spaceObject.isDisposable = true;
+                    spaceObject.timeToDispose = StaticsHolder.RESPAWN_DEFAULT_DELAY;
+                    spaceObject.position = new Point(-Mathf.Infinity, Mathf.Infinity);
+                    vicinityGrid[tempX, tempY].isDisposable = true;
+                    vicinityGrid[tempX, tempY].timeToDispose = StaticsHolder.RESPAWN_DEFAULT_DELAY;
+                    vicinityGrid[tempX, tempY].position = new Point(-Mathf.Infinity, Mathf.Infinity);
+
+                    objectToDispose.Add(spaceObject);
+                    objectToDispose.Add(vicinityGrid[tempX, tempY]);
                 }
                 else
                 {
@@ -169,10 +187,8 @@ public class AsteroidField : MonoBehaviour
         }
     }
 
-    private IEnumerator DoRespawn(SpaceObject deadSpaceObject, float delay = 0)
+    private void Respawn(SpaceObject deadSpaceObject)
     {
-        deadSpaceObject.position = new Point(-Mathf.Infinity, Mathf.Infinity);
-
         tempIndex = StaticsHolder.FIND_NEW_POSITION_ATTEMPTS;
         tempPosition = nodes[Random.Range(0, nodes.Count)];
 
@@ -181,8 +197,6 @@ public class AsteroidField : MonoBehaviour
             tempPosition = nodes[Random.Range(0, nodes.Count)];
             tempIndex--;
         }
-
-        yield return new WaitForSeconds(delay);
 
         tempIndex = StaticsHolder.FIND_NEW_POSITION_ATTEMPTS;
         deadSpaceObject.position = new Point(tempPosition.x, tempPosition.y);

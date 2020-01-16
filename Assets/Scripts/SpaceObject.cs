@@ -8,6 +8,7 @@ public class SpaceObject
     public Point vector;
     public bool isVisible;
     public bool isDisposable;
+    public float timeToDispose;
 
     public SpaceObject(Point position, Point vector)
     {
@@ -15,5 +16,6 @@ public class SpaceObject
         this.vector = vector;
         isVisible = false;
         isDisposable = false;
+        timeToDispose = StaticsHolder.RESPAWN_DEFAULT_DELAY;
     }
 }
