@@ -5,11 +5,8 @@ using UnityEngine.Events;
 
 public class Asteroid : MonoBehaviour
 {
-    [SerializeField] GameObject explosion;
-
     AsteroidField asteroidField;
     SpaceObject spaceObject;
-    float explosionLifespan = 1f;
 
     public void SetAsteroid(AsteroidField field, SpaceObject spaceObj)
     {

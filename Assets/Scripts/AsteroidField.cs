@@ -11,6 +11,7 @@ public class AsteroidField : MonoBehaviour
     public static event OnUpdate updateVisibleAsteroids;
     public Stack<GameObject> asteroidStack;
 
+    Coroutine simulationCoroutine;
     List<Vector2> nodes;
     List<SpaceObject> spaceObjects, objectToDispose;
     SpaceObject[,] vicinityGrid;
@@ -59,7 +60,10 @@ public class AsteroidField : MonoBehaviour
         }
 
         FillAsteroidStack();
-        StartCoroutine(UpdatePositions());
+
+        if (simulationCoroutine != null)
+            StopCoroutine(simulationCoroutine);
+        simulationCoroutine = StartCoroutine(UpdatePositions());
     }    
 
     private void SetRectPosition(Vector3 shipPosition)
@@ -94,7 +98,8 @@ public class AsteroidField : MonoBehaviour
 
     public void KillSimulation()
     {
-        StopAllCoroutines();
+        if (simulationCoroutine != null)
+            StopCoroutine(simulationCoroutine);
     }
 
     private void FillAsteroidStack()

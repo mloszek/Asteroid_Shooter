@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class IngameUiController : BaseUiController
 {
-    [SerializeField] private GameObject gameOverScreen;
+    [SerializeField] GameObject gameOverScreen;
 
     private static int score = 0;
 
