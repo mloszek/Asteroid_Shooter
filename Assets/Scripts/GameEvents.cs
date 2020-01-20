@@ -52,4 +52,18 @@ public class GameEvents : MonoBehaviour
         if (OnPlayLaser != null)
             OnPlayLaser();
     }
+
+    public static System.Action OnUpdateVisibleAsteroids;
+    public static void UpdateVisibleAsteroids()
+    {
+        if (OnUpdateVisibleAsteroids != null)
+            OnUpdateVisibleAsteroids();
+    }
+
+    public static System.Action<Vector2> OnCreateExplosion;
+    public static void CreateExplosion(Vector2 position)
+    {
+        if (OnCreateExplosion != null)
+            OnCreateExplosion(position);
+    }
 }

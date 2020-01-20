@@ -7,8 +7,6 @@ public class AsteroidField : MonoBehaviour
     [SerializeField] GameObject asteroid, explosion;
     [SerializeField] Rect rect;
 
-    public delegate void OnUpdate();
-    public static event OnUpdate updateVisibleAsteroids;
     public Stack<GameObject> asteroidStack;
 
     Coroutine simulationCoroutine;
@@ -39,7 +37,6 @@ public class AsteroidField : MonoBehaviour
     {
         rect.width = 20;
         rect.height = 20;
-        updateVisibleAsteroids = null;
         nodes = new List<Vector2>();
         asteroidStack = new Stack<GameObject>();
         spaceObjects = new List<SpaceObject>();
@@ -64,7 +61,7 @@ public class AsteroidField : MonoBehaviour
         if (simulationCoroutine != null)
             StopCoroutine(simulationCoroutine);
         simulationCoroutine = StartCoroutine(UpdatePositions());
-    }    
+    }
 
     private void SetRectPosition(Vector3 shipPosition)
     {
@@ -81,8 +78,8 @@ public class AsteroidField : MonoBehaviour
 
         if (vicinityGrid[objX, objY] != null)
         {
-            Destroy(Instantiate(explosion, new Vector3(objX, objY, 0), transform.rotation), StaticsHolder.EXPLOSION_LIFESPAN);
             obj.SetActive(false);
+            GameEvents.CreateExplosion(obj.transform.position);
             Respawn(vicinityGrid[objX, objY]);
             if (obj.tag == StaticsHolder.PROJECTILE_TAG)
                 IngameUiController.RaiseScore();
@@ -171,6 +168,9 @@ public class AsteroidField : MonoBehaviour
 
                 if (vicinityGrid[tempX, tempY] != null && !vicinityGrid[tempX, tempY].isDisposable)
                 {
+                    if (spaceObject.isVisible || vicinityGrid[tempX, tempY].isVisible)
+                        GameEvents.CreateExplosion(new Vector2(spaceObject.position.x, spaceObject.position.y));
+
                     spaceObject.isDisposable = true;
                     spaceObject.timeToDispose = StaticsHolder.RESPAWN_DEFAULT_DELAY;
                     spaceObject.position = new Point(-Mathf.Infinity, Mathf.Infinity);
@@ -186,7 +186,7 @@ public class AsteroidField : MonoBehaviour
                     vicinityGrid[tempX, tempY] = spaceObject;
                 }
             }
-            updateVisibleAsteroids?.Invoke();
+            GameEvents.UpdateVisibleAsteroids();
 
             yield return new WaitForSeconds(.01f);
         }

@@ -8,12 +8,17 @@ public class Asteroid : MonoBehaviour
     AsteroidField asteroidField;
     SpaceObject spaceObject;
 
+    private void OnDisable()
+    {
+        GameEvents.OnUpdateVisibleAsteroids -= UpdateAsteroid;
+    }
+
     public void SetAsteroid(AsteroidField field, SpaceObject spaceObj)
     {
         asteroidField = field;
         spaceObject = spaceObj;
         gameObject.SetActive(true);
-        AsteroidField.updateVisibleAsteroids += UpdateAsteroid;
+        GameEvents.OnUpdateVisibleAsteroids += UpdateAsteroid;
     }
 
     public void UpdateAsteroid()
@@ -23,7 +28,7 @@ public class Asteroid : MonoBehaviour
         spaceObject.position.y += spaceObject.vector.y;
         if (!asteroidField.IsObjectVisible(spaceObject.position.x, spaceObject.position.y))
         {
-            AsteroidField.updateVisibleAsteroids -= UpdateAsteroid;
+            GameEvents.OnUpdateVisibleAsteroids -= UpdateAsteroid;
             spaceObject.isVisible = false;
             gameObject.SetActive(false);
             asteroidField.asteroidStack.Push(gameObject);

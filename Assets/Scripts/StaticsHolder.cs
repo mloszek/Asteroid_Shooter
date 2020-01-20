@@ -11,5 +11,4 @@ public static class StaticsHolder
     public static int FIND_NEW_POSITION_ATTEMPTS = 3;
     public static int MIN_OBJECT_DISTANCE = 1;
     public static float RESPAWN_DEFAULT_DELAY = 1f;
-    public static float EXPLOSION_LIFESPAN = 1f;
 }
